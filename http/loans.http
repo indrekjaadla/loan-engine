@@ -1,0 +1,120 @@
+### Loan Engine — Example Requests
+###
+### This file demonstrates the API's behavior across both successful and error scenarios.
+### Run with IntelliJ's built-in HTTP client (click the green "Run" arrow next to each request),
+### or copy the request body into any HTTP client of your choice.
+###
+### Prerequisite: the application must be running locally (see README → How to Run).
+
+@baseUrl = http://localhost:8080
+
+### 1. Create a consumer loan — annuity schedule, final payment SMALLER than regular payments
+#
+# This is a fully hand-verified case (cross-checked independently in a spreadsheet before the
+# calculator was implemented). Rounding drift across the 12 monthly payments happens to leave the
+# final payment slightly smaller than the fixed monthly payment (888.47 vs. 888.49). The final
+# row's remainingBalance resolves to exactly 0.00, confirming the loan is fully repaid with no
+# residual drift.
+POST {{baseUrl}}/api/loans
+Content-Type: application/json
+
+{
+  "loanType": "CONSUMER_LOAN",
+  "loanAmount": 10000.00,
+  "periodInMonths": 12,
+  "annualInterestRate": 12.00,
+  "repaymentType": "ANNUITY"
+}
+
+### 2. Create a consumer loan — annuity schedule, final payment BIGGER than regular payments
+#
+# Same logic as request 1, but with different loan parameters chosen so that rounding drift falls
+# in the opposite direction: the final payment (621.98) is slightly larger than the regular
+# payment (621.94). Included specifically to prove the final-payment adjustment isn't only correct
+# in one direction by coincidence — both directions are independently verified and tested.
+POST {{baseUrl}}/api/loans
+Content-Type: application/json
+
+{
+  "loanType": "CONSUMER_LOAN",
+  "loanAmount": 7000.00,
+  "periodInMonths": 12,
+  "annualInterestRate": 12.00,
+  "repaymentType": "ANNUITY"
+}
+
+### 3. Unsupported loan type
+#
+# LoanType has three values (CONSUMER_LOAN, CAR_LOAN, MORTGAGE_LOAN), but only CONSUMER_LOAN is
+# currently implemented. This demonstrates that unsupported-but-recognized values are rejected
+# explicitly and gracefully (400, clear message) rather than silently accepted or failing with an
+# unhandled server error. See README → Scope & Tradeoffs for the reasoning behind this scope cut.
+POST {{baseUrl}}/api/loans
+Content-Type: application/json
+
+{
+  "loanType": "CAR_LOAN",
+  "loanAmount": 10000.00,
+  "periodInMonths": 12,
+  "annualInterestRate": 12.00,
+  "repaymentType": "ANNUITY"
+}
+
+### 4. Unsupported repayment type
+#
+# Same reasoning as request 3, for RepaymentType: EQUAL_PRINCIPAL is a recognized enum value with
+# no calculation logic implemented yet. Rejected the same way, with a distinct, field-specific
+# message.
+POST {{baseUrl}}/api/loans
+Content-Type: application/json
+
+{
+  "loanType": "CONSUMER_LOAN",
+  "loanAmount": 10000.00,
+  "periodInMonths": 12,
+  "annualInterestRate": 12.00,
+  "repaymentType": "EQUAL_PRINCIPAL"
+}
+
+### 5. Single validation failure — loan amount below minimum
+#
+# Demonstrates Bean Validation at the API boundary: loanAmount is below the configured minimum
+# (500.00). Returns a 400 with a field-specific message under "loanAmount" in the response body.
+POST {{baseUrl}}/api/loans
+Content-Type: application/json
+
+{
+  "loanType": "CONSUMER_LOAN",
+  "loanAmount": 100.00,
+  "periodInMonths": 12,
+  "annualInterestRate": 12.00,
+  "repaymentType": "ANNUITY"
+}
+
+### 6. Multiple validation failures at once
+#
+# loanAmount, periodInMonths, and annualInterestRate are all out of range simultaneously. This
+# demonstrates that ALL failing validations are returned together in a single response — each
+# field maps to a list of every message that applies to it — rather than only the first failure
+# encountered, so a client can fix every problem in one round trip instead of discovering issues
+# one at a time.
+POST {{baseUrl}}/api/loans
+Content-Type: application/json
+
+{
+  "loanType": "CONSUMER_LOAN",
+  "loanAmount": 100.00,
+  "periodInMonths": 1,
+  "annualInterestRate": 99.00,
+  "repaymentType": "ANNUITY"
+}
+
+### 7. Malformed / empty request body — known gap
+#
+# An empty body fails during JSON deserialization, before Bean Validation ever runs. This is a
+# different failure path (HttpMessageNotReadableException) than requests 5 and 6, and it is NOT
+# currently caught by the application's custom exception handler — the response falls back to
+# Spring Boot's default error format instead of the application's structured error body. This is
+# a known, intentional scope cut; see README → Scope & Tradeoffs.
+POST {{baseUrl}}/api/loans
+Content-Type: application/json
