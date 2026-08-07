@@ -2,6 +2,7 @@ package com.indrekjaadla.loanengine.strategy;
 
 import com.indrekjaadla.loanengine.domain.Loan;
 import com.indrekjaadla.loanengine.domain.ScheduledPayment;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import static java.math.MathContext.DECIMAL64;
 import static java.math.MathContext.UNLIMITED;
 import static java.math.RoundingMode.HALF_UP;
 
+@Component
 public class AnnuityRepaymentScheduleGenerator implements RepaymentScheduleGenerator {
     @Override
     public List<ScheduledPayment> generate(Loan loan) {
