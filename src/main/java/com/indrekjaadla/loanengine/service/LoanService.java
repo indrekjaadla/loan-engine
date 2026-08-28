@@ -53,7 +53,7 @@ public class LoanService {
         return new Loan(loanRequest.loanType(),
                 toAmountFormat(loanRequest.loanAmount()),
                 loanRequest.periodInMonths(),
-                toInterestFormat(loanRequest.annualInterestRate()),
+                toDecimalFormat(loanRequest.annualInterestRate()),
                 loanRequest.repaymentType());
     }
 
@@ -68,7 +68,7 @@ public class LoanService {
         return money.setScale(2, HALF_UP);
     }
 
-    private BigDecimal toInterestFormat(BigDecimal percentRate) {
+    private BigDecimal toDecimalFormat(BigDecimal percentRate) {
         return percentRate.divide(ONE_HUNDRED, UNLIMITED).setScale(4, HALF_UP);
     }
 }
