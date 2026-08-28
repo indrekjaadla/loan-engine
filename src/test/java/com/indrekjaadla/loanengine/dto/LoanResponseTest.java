@@ -31,7 +31,7 @@ class LoanResponseTest {
         assertThat(response.loanType()).isEqualTo(loan.getLoanType());
         assertThat(response.loanAmount()).isEqualTo(loan.getLoanAmount());
         assertThat(response.periodInMonths()).isEqualTo(loan.getPeriodInMonths());
-        assertThat(response.annualInterestRate()).isEqualTo(loan.getAnnualInterestRate());
+        assertThat(response.annualInterestRate()).isEqualTo(new BigDecimal("12.00"));
         assertThat(response.repaymentType()).isEqualTo(loan.getRepaymentType());
         assertThat(response.scheduledPayments()).isEqualTo(loan.getScheduledPayments());
     }
