@@ -25,7 +25,8 @@ public class LoanController {
 
     @PostMapping
     public ResponseEntity<LoanResponse> createLoan(@Valid @RequestBody LoanRequest loanRequest) {
-        LoanResponse loanResponse = from(loanService.createLoanWithScheduledPayments(loanRequest));
-        return ResponseEntity.status(CREATED).body(loanResponse);
+        return ResponseEntity
+                .status(CREATED)
+                .body(from(loanService.createLoanWithScheduledPayments(loanRequest)));
     }
 }
