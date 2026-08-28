@@ -136,8 +136,6 @@ The following were deliberately scoped out, in favor of a smaller, well-tested, 
   and variable/fixed interest (mentioned as optional in the brief) aren't modeled at all.
 - **No persistence.** The schedule is computed on demand and returned directly; nothing is saved.
   Chosen over building it partially, given persistence was explicitly optional in the brief.
-- **No response DTO.** The API returns the domain `Loan` object directly rather than mapping to a
-  separate response shape.
 - **Hardcoded, company-level validation limits.** Loan amount/period/rate bounds are fixed Bean
   Validation constraints, not externalized to configuration, and apply uniformly rather than
   per loan type (only one loan type exists today, so the distinction isn't yet meaningful).
