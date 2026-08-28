@@ -294,9 +294,29 @@ Avoid:
 
 ---
 
-## Rule 12 — Default quality check
+## Rule 12 — Attribution
 
-Before finalizing every commit message verify:
+Every commit whose code change was authored by Claude Code must end with:
+
+```
+Co-Authored-By: Claude <model name> <noreply@anthropic.com>
+```
+
+using the actual model name of the session that made the change (e.g. "Claude
+Sonnet 5", "Claude Opus 5") — never hardcode a specific model name in this
+rule or in any commit.
+
+Add it as the last line, separated from the body by one blank line.
+
+A commit that only carries a change the user made manually (e.g. in an IDE)
+must NOT include this trailer — attribution reflects who wrote the code, not
+who ran `git commit`.
+
+---
+
+## Rule 13 — Default quality check
+
+Before finalizing every commit message, verify:
 
 - ✓ Heading explains WHAT changed.
 - ✓ Heading uses the correct action verb.
@@ -308,6 +328,7 @@ Before finalizing every commit message verify:
 - ✓ Concise.
 - ✓ Professional.
 - ✓ Heading and body answer different questions.
+- ✓ Co-Authored-By trailer present if Claude authored the code change.
 ---
 
 # Examples
