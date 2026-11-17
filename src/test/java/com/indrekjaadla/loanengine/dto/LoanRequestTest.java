@@ -16,7 +16,6 @@ import static com.indrekjaadla.loanengine.domain.RepaymentType.ANNUITY;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class LoanRequestTest {
-    private static final String SCALE_MESSAGE = "Annual interest rate must have exactly 2 decimal places";
 
     private static ValidatorFactory validatorFactory;
     private static Validator validator;
@@ -72,7 +71,7 @@ class LoanRequestTest {
     private void assertSingleScaleViolation(Set<ConstraintViolation<LoanRequest>> violations) {
         assertThat(violations).singleElement().satisfies(violation -> {
             assertThat(violation.getPropertyPath()).hasToString("annualInterestRate");
-            assertThat(violation.getMessage()).isEqualTo(SCALE_MESSAGE);
+            assertThat(violation.getMessage()).isEqualTo("Annual interest rate must have exactly 2 decimal places");
         });
     }
 }
