@@ -45,6 +45,29 @@ class LoanApiIntegrationTest {
     }
 
     @Test
+    void createLoan_shouldReturnAllValidationErrors_whenSeveralFieldsAreInvalid() throws Exception {
+        String json = """
+                {
+                  "loanType": "CONSUMER_LOAN",
+                  "loanAmount": 100.00,
+                  "periodInMonths": 1,
+                  "annualInterestRate": 99.00,
+                  "repaymentType": "ANNUITY"
+                }""";
+
+        mockMvc.perform(post("/api/loans")
+                        .contentType(APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Validation Failed"))
+                .andExpect(jsonPath("$.message.length()").value(3))
+                .andExpect(jsonPath("$.message.loanAmount[0]").value("Loan amount must be at least 500.00"))
+                .andExpect(jsonPath("$.message.periodInMonths[0]").value("Loan period must be at least 3 months"))
+                .andExpect(jsonPath("$.message.annualInterestRate[0]").value("Annual interest rate must not exceed 50.00"));
+    }
+
+
+    @Test
     void createLoan_shouldReturnBadRequest_whenLoanTypeIsNotSupported() throws Exception {
         String json = requestWithTypeAndRate(CAR_LOAN, "12.00");
         mockMvc.perform(post("/api/loans")
