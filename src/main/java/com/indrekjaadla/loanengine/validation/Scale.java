@@ -8,7 +8,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.ElementType.RECORD_COMPONENT;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -18,7 +17,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Documented
 @Constraint(validatedBy = ScaleValidator.class)
-@Target({FIELD, RECORD_COMPONENT, PARAMETER})
+@Target({FIELD, RECORD_COMPONENT})
 @Retention(RUNTIME)
 public @interface Scale {
 
