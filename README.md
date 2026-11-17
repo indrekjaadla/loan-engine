@@ -84,7 +84,11 @@ Java 21, Spring Boot, Gradle (Groovy DSL), JUnit 5, AssertJ, Lombok.
 Monetary values use `BigDecimal`, scale 2, `HALF_UP` — avoids the binary floating-point precision
 issues of `double`/`float`, and `HALF_UP` matches manual rounding a borrower could verify by hand.
 
-`annualInterestRate` is stored at scale 4 (e.g. `0.1200` for 12%) to preserve full precision when
+`annualInterestRate` must be sent with exactly two decimal places (e.g. `12.00`). Values such as
+`12`, `12.5` or `12.000` are rejected with `400 Bad Request`, so callers explicitly confirm the
+precision they send instead of having it silently normalized.
+
+`annualInterestRate` is stored at scale 4 (e.g. `0.1200` for 12.00%) to preserve full precision when
 converting from a 2-decimal percent input.
 
 `MathContext.UNLIMITED` is used for `multiply`/`add`/`subtract`/`pow`, which always produces exact
